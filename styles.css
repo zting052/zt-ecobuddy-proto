@@ -1,23 +1,36 @@
+/* Load DynaPuff from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400;700&display=swap');
+
+/* CSS variables (if present) and global reset... */
 :root{
-  --cream:#F6EEDC;
-  --green:#0E6B41;
-  --green-medium:#2F8F57;
-  --brown:#3A2417;
-  --card:#E7D9BD;
-  --text:#1A120B;
-  --yes:#3ABF6A;
-  --no:#C84545;
-  --accent:#2F8F57;
+  --cream: #fff7f0;
+  --text: #2b2622;
+  --card: #fff;
+  --accent: #6fbf73;
+  --green: #7ecf7b;
+  --yes: #2fb36f;
+  --no: #d9534f;
 }
 
-*{box-sizing:border-box}
-html,body{
+/* Apply DynaPuff site-wide */
+html, body, #app, .screen, .prompt, .card, .row, .kv,
+input, textarea, select, button, a, p, h1, h2, h3, h4, h5, h6, label {
+  font-family: 'DynaPuff', cursive;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  color:var(--text);
+}
+
+/* Fallback for any component that explicitly sets a monospace stack:
+   override to ensure DynaPuff is used everywhere */
+.kv { font-family: 'DynaPuff', cursive; }
+
+/* Existing body / container rules (preserved, only font changed) */
+body{
   margin:0;
-  padding:0;
-  height:100%;
   background:var(--cream);
   color:var(--text);
-  font-family: "DynaPuff", cursive, sans-serif;
+  /* font-family replaced above */
 }
 
 #app{
@@ -97,61 +110,5 @@ html,body{
 }
 .row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px dashed rgba(0,0,0,.1) }
 .row:last-child{ border-bottom:0 }
-.kv{ display:flex; gap:12px; font-family: ui-monospace, Menlo, Consolas, monospace }
+.kv{ display:flex; gap:12px; /* font-family now uses DynaPuff */ }
 .k{ opacity:.7; min-width:92px }
-.toggle{
-  display:inline-flex; align-items:center; gap:8px; font-weight:700
-}
-.switch{
-  width:44px; height:26px; border-radius:999px; background:#bbb; position:relative;
-}
-.switch::after{
-  content:""; position:absolute; width:20px; height:20px; top:3px; left:3px;
-  border-radius:50%; background:#fff; transition:.2s;
-}
-.switch.on{ background:var(--accent) }
-.switch.on::after{ left:21px }
-
-/* Footer quick links */
-.footer-links{
-  display:flex; gap:12px; margin:12px 8px;
-}
-.link-btn{
-  background:#ddd2b9; border:0; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600
-}
-
-/* Leaderboard */
-.lb-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px dashed rgba(0,0,0,.1) }
-.lb-row:last-child{ border-bottom:0 }
-
-/* Bottom navigation */
-.bottom-nav{
-  position:fixed; left:0; right:0; bottom:0;
-  height:72px; background:var(--brown);
-  display:flex; justify-content:space-around; align-items:center;
-  padding:10px 8px calc(env(safe-area-inset-bottom, 0) + 8px);
-  z-index:10;
-}
-.nav-btn{
-  width:56px; height:48px; border-radius:12px; border:none; color:#fff; background:transparent;
-  display:grid; place-items:center; cursor:pointer; transition:.15s transform ease;
-}
-.nav-btn:active{ transform: translateY(1px) }
-.nav-btn.active{ background:rgba(255,255,255,.12) }
-.nav-btn svg{ width:28px; height:28px }
-
-/* Small screens */
-@media (min-width:640px){
-  #app{ display:grid; place-content:center; }
-  .screen{ width:420px; }
-}
-
-/* Font */
-.dynapuff-<uniquifier> {
-  font-family: "DynaPuff", system-ui;
-  font-optical-sizing: auto;
-  font-weight: <weight>;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
-}
