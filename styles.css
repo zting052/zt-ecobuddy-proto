@@ -1,7 +1,6 @@
-/* Load DynaPuff from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400;700&display=swap');
-
-/* CSS variables (if present) and global reset... */
+/* ---------------------------
+   global variables (keep existing values if you already have them)
+   --------------------------- */
 :root{
   --cream: #fff7f0;
   --text: #2b2622;
@@ -10,31 +9,29 @@
   --green: #7ecf7b;
   --yes: #2fb36f;
   --no: #d9534f;
+  --brown: #6b4b3d; /* fallback for bottom-nav */
 }
 
-/* Apply DynaPuff site-wide */
-html, body, #app, .screen, .prompt, .card, .row, .kv,
-input, textarea, select, button, a, p, h1, h2, h3, h4, h5, h6, label {
-  font-family: 'DynaPuff', cursive;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  color:var(--text);
+/* Apply DynaPuff site-wide (index.html already preloads the font) */
+html, body, #app,
+.screen, .prompt, .card, .row, .kv,
+input, textarea, select, button, a, p, span,
+h1, h2, h3, h4, h5, h6, label {
+  font-family: "DynaPuff", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Fallback for any component that explicitly sets a monospace stack:
-   override to ensure DynaPuff is used everywhere */
-.kv { font-family: 'DynaPuff', cursive; }
-
-/* Existing body / container rules (preserved, only font changed) */
-body{
-  margin:0;
-  background:var(--cream);
-  color:var(--text);
-  /* font-family replaced above */
+/* keep bottom space for fixed nav */
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--text);
 }
 
+/* main app container */
 #app{
-  padding:16px 16px 96px; /* bottom space for nav */
+  padding:16px 16px 96px; /* bottom space so content doesn't sit under the fixed nav */
   min-height:100dvh;
   position:relative;
 }
@@ -110,5 +107,51 @@ body{
 }
 .row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px dashed rgba(0,0,0,.1) }
 .row:last-child{ border-bottom:0 }
-.kv{ display:flex; gap:12px; /* font-family now uses DynaPuff */ }
+.kv{ display:flex; gap:12px; /* no separate monospace stack so DynaPuff applies */ }
 .k{ opacity:.7; min-width:92px }
+.toggle{
+  display:inline-flex; align-items:center; gap:8px; font-weight:700
+}
+.switch{
+  width:44px; height:26px; border-radius:999px; background:#bbb; position:relative;
+}
+.switch::after{
+  content:""; position:absolute; width:20px; height:20px; top:3px; left:3px;
+  border-radius:50%; background:#fff; transition:.2s;
+}
+.switch.on{ background:var(--accent) }
+.switch.on::after{ left:21px }
+
+/* Footer quick links */
+.footer-links{
+  display:flex; gap:12px; margin:12px 8px;
+}
+.link-btn{
+  background:#ddd2b9; border:0; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600
+}
+
+/* Leaderboard */
+.lb-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px dashed rgba(0,0,0,.1) }
+.lb-row:last-child{ border-bottom:0 }
+
+/* Bottom navigation — ensure visible and above other content */
+.bottom-nav{
+  position:fixed; left:0; right:0; bottom:0;
+  height:72px; background:var(--brown, #6b4b3d);
+  display:flex; justify-content:space-around; align-items:center;
+  padding:10px 8px calc(env(safe-area-inset-bottom, 0) + 8px);
+  z-index:9999; /* ensure the nav stays on top */
+}
+.nav-btn{
+  width:56px; height:48px; border-radius:12px; border:none; color:#fff; background:transparent;
+  display:grid; place-items:center; cursor:pointer; transition:.15s transform ease;
+}
+.nav-btn:active{ transform: translateY(1px) }
+.nav-btn.active{ background:rgba(255,255,255,.12) }
+.nav-btn svg{ width:28px; height:28px }
+
+/* Small screens */
+@media (min-width:640px){
+  #app{ display:grid; place-content:center; }
+  .screen{ width:420px; }
+}
