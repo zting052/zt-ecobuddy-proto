@@ -1,10 +1,10 @@
 /* ---------------------------
-   Updated styles.css — constrained frame + fixed settings icon stacking
+   Fixed 320x568 frame + safe stacking for settings icon
    --------------------------- */
 :root{
   --frame-width: 320px;
   --frame-height: 568px;
-  --page-bg: #D4D4D4; /* page background requested by user */
+  --page-bg: #D4D4D4; /* page background outside the frame */
   --cream: #fff7f0;
   --text: #2b2622;
   --card: #fff;
@@ -12,7 +12,7 @@
   --green: #7ecf7b;
   --yes: #2fb36f;
   --no: #d9534f;
-  --brown: #6b4b3d; /* fallback for bottom-nav */
+  --brown: #6b4b3d; /* nav background fallback */
 }
 
 /* Page background (outside the framed app) */
@@ -22,7 +22,7 @@ html, body {
   background: var(--page-bg);
 }
 
-/* Apply DynaPuff site-wide (index.html already preloads the font) */
+/* Global font + color */
 html, body, #app,
 .screen, .prompt, .card, .row, .kv,
 input, textarea, select, button, a, p, span,
@@ -39,8 +39,7 @@ h1, h2, h3, h4, h5, h6, label {
   min-height:100vh;
   display:grid;
   place-items:center;
-  padding: 24px; /* small outer padding so frame doesn't touch edges on tiny viewports */
-  box-sizing: border-box;
+  padding: 24px;
 }
 
 /* The app 'screen' is the fixed-size frame (320x568) */
@@ -50,65 +49,50 @@ h1, h2, h3, h4, h5, h6, label {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  background: var(--card);
+  background: var(--card);         /* white card inside */
   box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  z-index: 1;                      /* ensure above page background */
 }
 
-/* ---------------------------
-   SETTINGS ICON: constrain / prevent covering content
-   --------------------------- */
 /* Constrain settings icon so it can't grow and block content */
 .settings{
   position:absolute;
-  top:8px;
-  left:8px;
-  width:40px;
-  height:40px;            /* fixed size */
+  top:8px; left:8px;
+  width:40px; height:40px;         /* fixed size */
   padding:0;
-  display:inline-grid;
-  place-items:center;
+  display:inline-grid; place-items:center;
   background:transparent;
   border-radius:8px;
-  overflow:hidden;        /* clip any oversized child */
-  z-index: 10;            /* lower than main content so it won't obscure it */
-  pointer-events: auto;
+  overflow:hidden;                 /* clip oversized svg */
+  z-index: 5;                      /* below main content */
+}
+.settings svg{
+  width:20px; height:20px; display:block; fill: currentColor;
 }
 
-/* Make sure the SVG inside doesn't expand beyond the button and uses currentColor */
-.settings svg {
-  width:20px;
-  height:20px;
-  display:block;
-  fill: currentColor;
+/* Make sure main content sits above settings icon */
+.level-row, .prompt, .card, .footer-links {
+  position: relative;
+  z-index: 10;
 }
 
-/* Ensure main content stacks above the settings icon so it isn't obscured */
-.prompt, .card, .level-row {
-  position: relative;    /* create stacking context */
-  z-index: 20;           /* content above settings */
-}
-
-/* ---------------------------
-   Core layout pieces
-   --------------------------- */
+/* Level + progress */
 .level-row{
   display:flex; align-items:center; gap:12px;
   font-weight:700; font-size:1.1rem;
   margin:8px 8px 12px;
 }
 .level-sub{ font-weight:600; color:#3d2b1f; }
-.progress{
-  flex:1; height:8px; background:#ddd; border-radius:6px; overflow:hidden;
-}
+.progress{ flex:1; height:8px; background:#ddd; border-radius:6px; overflow:hidden; }
 .progress > span{ display:block; height:100%; background:var(--accent); width:0% }
 
 /* Prompt card */
 .prompt{
   background:var(--card);
-  color:var(--text);
   border-radius:16px;
   padding:16px;
-  width:calc(min(520px, 92%) - 32px);
+  width: calc(100% - 32px);        /* fit nicely inside 320px frame */
+  margin: 0 auto;
   box-shadow: 0 2px 0 rgba(0,0,0,.15) inset, 0 2px 8px rgba(0,0,0,.06);
 }
 .prompt h3{ margin:0 0 12px; font-size:1rem }
@@ -128,9 +112,7 @@ h1, h2, h3, h4, h5, h6, label {
 }
 
 /* Hills */
-.hills{
-  position:absolute; left:0; right:0; bottom:64px; height:140px;
-}
+.hills{ position:absolute; left:0; right:0; bottom:64px; height:140px; }
 .hill{
   position:absolute; bottom:0; width:55%; height:120px; background:var(--green);
   border-top-left-radius:120px; border-top-right-radius:120px;
@@ -147,40 +129,27 @@ h1, h2, h3, h4, h5, h6, label {
 .row:last-child{ border-bottom:0 }
 .kv{ display:flex; gap:12px; }
 .k{ opacity:.7; min-width:92px }
-.toggle{
-  display:inline-flex; align-items:center; gap:8px; font-weight:700
-}
-.switch{
-  width:44px; height:26px; border-radius:999px; background:#bbb; position:relative;
-}
-.switch::after{
-  content:""; position:absolute; width:20px; height:20px; top:3px; left:3px;
-  border-radius:50%; background:#fff; transition:.2s;
-}
+.toggle{ display:inline-flex; align-items:center; gap:8px; font-weight:700 }
+.switch{ width:44px; height:26px; border-radius:999px; background:#bbb; position:relative; }
+.switch::after{ content:""; position:absolute; width:20px; height:20px; top:3px; left:3px; border-radius:50%; background:#fff; transition:.2s; }
 .switch.on{ background:var(--accent) }
 .switch.on::after{ left:21px }
 
 /* Footer quick links */
-.footer-links{
-  display:flex; gap:12px; margin:12px 8px;
-}
-.link-btn{
-  background:#ddd2b9; border:0; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600
-}
+.footer-links{ display:flex; gap:12px; margin:12px 8px; }
+.link-btn{ background:#ddd2b9; border:0; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600 }
 
 /* Leaderboard */
 .lb-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px dashed rgba(0,0,0,.1) }
 .lb-row:last-child{ border-bottom:0 }
 
-/* Bottom navigation
-   - center the nav directly underneath the framed .screen
-   - keep it visually aligned to the frame rather than full-viewport width */
+/* Bottom navigation: centered under the frame */
 .bottom-nav{
   position: fixed;
   width: var(--frame-width);
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(max((100vh - var(--frame-height))/2, 12px));
+  bottom: 12px;
   height: 72px;
   background: var(--brown, #6b4b3d);
   display:flex; justify-content:space-around; align-items:center;
@@ -196,16 +165,3 @@ h1, h2, h3, h4, h5, h6, label {
 .nav-btn:active{ transform: translateY(1px) }
 .nav-btn.active{ background:rgba(255,255,255,.12) }
 .nav-btn svg{ width:28px; height:28px }
-
-/* Small screens: keep the frame fixed size but allow the surrounding layout to adapt */
-@media (max-width:360px){
-  /* If the viewport is smaller than the frame width, scale the frame down to fit */
-  .screen{
-    transform: scale(calc((100vw - 24px) / var(--frame-width)));
-    transform-origin: top center;
-  }
-  .bottom-nav{
-    transform: translateX(-50%) scale(calc((100vw - 24px) / var(--frame-width)));
-    transform-origin: bottom center;
-  }
-}
