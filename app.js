@@ -64,9 +64,9 @@ function setProgress(el, value){
 function renderHome(){
   app.innerHTML = `
     <section class="screen">
-      <a class="settings" href="#" aria-label="Settings" title="Settings">
+      <button class="settings" type="button" aria-label="Settings" title="Settings">
         ${hexIcon()}
-      </a>
+      </button>
 
       <div class="leaf" aria-hidden="true">🍃</div>
 
@@ -113,15 +113,20 @@ function renderHome(){
   no.addEventListener('click', ()=>{
     xpEl.textContent = `No change`;
   });
+
+  // Settings button: no action for now (stub for future settings page)
+  // document.querySelector('.settings').addEventListener('click', ()=> {
+  //   location.hash = '/settings'; // to be implemented later
+  // });
 }
 
 /* ---------- Page 2: Actions / Devices (Row 2) ---------- */
 function renderActions(){
   app.innerHTML = `
     <section class="screen">
-      <a class="settings" href="#" aria-label="Settings" title="Settings">
+      <button class="settings" type="button" aria-label="Settings" title="Settings">
         ${hexIcon()}
-      </a>
+      </button>
 
       <div class="level-row">
         <span>Level ${state.level}</span>
@@ -194,15 +199,17 @@ function renderActions(){
 
   document.getElementById('googleHomeBtn').addEventListener('click', ()=> alert('Stub: open Google Home'));
   document.getElementById('myCreatedBtn').addEventListener('click', ()=> alert('Stub: open My Created'));
+
+  // Settings button: no action for now (stub for future settings page)
 }
 
 /* ---------- Page 3: Leaderboard / Social (Row 3) ---------- */
 function renderLeaderboard(){
   app.innerHTML = `
     <section class="screen">
-      <a class="settings" href="#" aria-label="Settings" title="Settings">
+      <button class="settings" type="button" aria-label="Settings" title="Settings">
         ${hexIcon()}
-      </a>
+      </button>
 
       <!-- Level 2 Bushes theme (same as other screens) -->
       <div class="level-row">
@@ -249,6 +256,8 @@ function renderLeaderboard(){
     renderLeaderboard();
   });
   document.getElementById('morePeople').addEventListener('click', ()=> alert('Stub: show more people'));
+
+  // Settings button: no action for now (stub for future settings page)
 }
 
 /* ----- tiny helper ----- */
@@ -258,4 +267,5 @@ function hexIcon(){
       <path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2zm0 2.3L5.34 7.5v9L12 19.7l6.66-3.2v-9L12 4.3z" fill="currentColor"/>
     </svg>
   `;
+}
 }
