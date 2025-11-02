@@ -1,7 +1,10 @@
 /* ---------------------------
-   global variables (keep existing values if you already have them)
+   global variables
    --------------------------- */
 :root{
+  --frame-width: 320px;
+  --frame-height: 568px;
+  --page-bg: #D4D4D4; /* page background requested by user */
   --cream: #fff7f0;
   --text: #2b2622;
   --card: #fff;
@@ -12,6 +15,13 @@
   --brown: #6b4b3d; /* fallback for bottom-nav */
 }
 
+/* Page background (outside the framed app) */
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--page-bg);
+}
+
 /* Apply DynaPuff site-wide (index.html already preloads the font) */
 html, body, #app,
 .screen, .prompt, .card, .row, .kv,
@@ -20,45 +30,32 @@ h1, h2, h3, h4, h5, h6, label {
   font-family: "DynaPuff", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* keep bottom space for fixed nav */
-body {
-  margin: 0;
-  background: var(--cream);
   color: var(--text);
 }
 
-/* main app container */
+/* Center the app frame on the page and reserve space for the nav under it.
+   The #app becomes a viewport that centers the .screen frame. */
 #app{
-  padding:16px 16px 96px; /* bottom space so content doesn't sit under the fixed nav */
-  min-height:100dvh;
-  position:relative;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding: 24px; /* small outer padding so frame doesn't touch edges on tiny viewports */
+  box-sizing: border-box;
 }
 
-/* Generic screen frame */
+/* The app 'screen' is the fixed-size frame (320x568) */
 .screen{
-  position:relative;
-  min-height:calc(100dvh - 112px);
-  border-radius:12px;
-  overflow:hidden;
+  width: var(--frame-width);
+  height: var(--frame-height);
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--card);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
 }
 
-/* Top-left hex settings icon */
-.settings{
-  position:absolute;
-  top:8px; left:8px;
-  width:28px; height:28px;
-  color:var(--text); opacity:.85;
-}
-
-/* Level + progress */
-.level-row{
-  display:flex; align-items:center; gap:12px;
-  font-weight:700; font-size:1.1rem;
-  margin:8px 8px 12px;
-}
-.level-sub{ font-weight:600; color:#3d2b1f; }
+/* If content inside expects the previous #app padding-bottom to avoid nav overlap,
+   reduce that reliance because the nav is centered and aligned to the frame below. */
 .progress{
   flex:1; height:8px; background:#ddd; border-radius:6px; overflow:hidden;
 }
@@ -70,7 +67,8 @@ body {
   color:var(--text);
   border-radius:16px;
   padding:16px;
-  width:min(520px, 92%);
+  width:calc(min(520px, 92%) - 32px);
+  box-sizing: border-box;
   box-shadow: 0 2px 0 rgba(0,0,0,.15) inset, 0 2px 8px rgba(0,0,0,.06);
 }
 .prompt h3{ margin:0 0 12px; font-size:1rem }
@@ -85,8 +83,8 @@ body {
 
 /* Leaf buddy placeholder */
 .leaf{
-  position:absolute; right:16px; top:40px;
-  font-size:64px; transform: rotate(-6deg);
+  position:absolute; right:12px; top:24px;
+  font-size:48px; transform: rotate(-6deg);
 }
 
 /* Hills */
@@ -107,7 +105,7 @@ body {
 }
 .row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px dashed rgba(0,0,0,.1) }
 .row:last-child{ border-bottom:0 }
-.kv{ display:flex; gap:12px; /* no separate monospace stack so DynaPuff applies */ }
+.kv{ display:flex; gap:12px; }
 .k{ opacity:.7; min-width:92px }
 .toggle{
   display:inline-flex; align-items:center; gap:8px; font-weight:700
@@ -134,13 +132,22 @@ body {
 .lb-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px dashed rgba(0,0,0,.1) }
 .lb-row:last-child{ border-bottom:0 }
 
-/* Bottom navigation — ensure visible and above other content */
+/* Bottom navigation
+   - center the nav directly underneath the framed .screen
+   - keep it visually aligned to the frame rather than full-viewport width */
 .bottom-nav{
-  position:fixed; left:0; right:0; bottom:0;
-  height:72px; background:var(--brown, #6b4b3d);
+  position: fixed;
+  width: var(--frame-width);
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(max((100vh - var(--frame-height))/2, 12px)); /* place nav just below the centered frame; fallback 12px on very small viewports */
+  height: 72px;
+  background: var(--brown, #6b4b3d);
   display:flex; justify-content:space-around; align-items:center;
   padding:10px 8px calc(env(safe-area-inset-bottom, 0) + 8px);
-  z-index:9999; /* ensure the nav stays on top */
+  z-index: 9999;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 .nav-btn{
   width:56px; height:48px; border-radius:12px; border:none; color:#fff; background:transparent;
@@ -150,8 +157,15 @@ body {
 .nav-btn.active{ background:rgba(255,255,255,.12) }
 .nav-btn svg{ width:28px; height:28px }
 
-/* Small screens */
-@media (min-width:640px){
-  #app{ display:grid; place-content:center; }
-  .screen{ width:420px; }
+/* Small screens: keep the frame fixed size but allow the surrounding layout to adapt */
+@media (max-width:360px){
+  /* If the viewport is smaller than the frame width, scale the frame down to fit */
+  .screen{
+    transform: scale(calc((100vw - 24px) / var(--frame-width)));
+    transform-origin: top center;
+  }
+  .bottom-nav{
+    transform: translateX(-50%) scale(calc((100vw - 24px) / var(--frame-width)));
+    transform-origin: bottom center;
+  }
 }
